@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta name="google" content="notranslate">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eternal Love - Ultra Nature Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@400;600;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff85a1;
+            --secondary: #4a1c40;
+            --gold: #fccb90;
+            --accent: #d597ce;
+            --glass: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.18);
+            --neon-glow: 0 0 20px rgba(255, 133, 161, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(-45deg, #0d0c1d, #1a2238, #2e112d, #110d1c);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            color: white;
+            font-family: 'Playpen Sans', 'Montserrat', 'Pyidaungsu', 'Segoe UI', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #particles-js { position: absolute; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 420px;
+            padding: 45px 30px;
+            border-radius: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .active { display: flex; animation: premiumFade 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        @keyframes premiumFade {
+            from { opacity: 0; transform: translateY(50px) scale(0.92); filter: blur(15px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        h1 {
+            font-family: 'Playpen Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, #fff 30%, var(--gold), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+
+        .btn-glow {
+            padding: 18px 45px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #31112c;
+            background: linear-gradient(45deg, var(--gold), var(--primary));
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 133, 161, 0.4);
+            letter-spacing: 1.5px;
+            margin-top: 35px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-glow:hover { transform: scale(1.05); box-shadow: 0 12px 30px rgba(255, 133, 161, 0.6); }
+        .btn-glow:active { transform: scale(0.95); }
+
+        .btn-return {
+            padding: 12px 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.08);
+            color: var(--gold);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 25px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-return:hover { background: rgba(255,255,255,0.15); border-color: var(--gold); }
+
+        #game-ui {
+            position: absolute;
+            top: calc(env(safe-area-inset-top) + 25px);
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .stat-card {
+            background: rgba(10, 6, 18, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            font-weight: 700;
+            color: var(--gold);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .loader-wrapper {
+            width: 100%; height: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px; margin: 40px 0;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .loader-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--gold), var(--primary), #fff);
+            box-shadow: 0 0 20px var(--primary);
+            transition: width 0.1s linear;
+        }
+
+        .page4-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .page-header {
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .page-header h2 {
+            font-family: 'Playpen Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(252,203,144, 0.5);
+        }
+
+        .page-content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+            flex-grow: 1;
+            padding: 10px;
+        }
+
+        .polaroid {
+            background: #ffffff;
+            width: 270px; 
+            padding: 14px;
+            padding-bottom: 45px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
+            border-radius: 8px;
+            position: relative;
+            transform: rotate(-3deg);
+            z-index: 5;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.06);
+            box-shadow: 0 35px 60px rgba(0,0,0,0.6);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 300px; 
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .polaroid-caption {
+            font-family: 'Playpen Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #2b2d42;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .decoration-emoji {
+            position: absolute;
+            z-index: 6;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+            animation: floatEmoji 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatEmoji {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .envelope-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .pixel-envelope-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pixel-envelope-group:hover {
+            transform: translateY(-8px) scale(1.03);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .pixel-envelope {
+            width: 75px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+            transition: transform 0.3s;
+        }
+        .pixel-envelope-group:hover .pixel-envelope { transform: rotate(-5deg) scale(1.1); }
+
+        .envelope-text {
+            font-family: 'Playpen Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: var(--gold);
+        }
+
+        .audio-control {
+            position: fixed;
+            top: 20px; right: 20px;
+            width: 45px; height: 45px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 200;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        .audio-control:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); }
+
+        #letter-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(7, 4, 12, 0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        #letter-display-content {
+            background: #fffbf4;
+            color: #2b2d42;
+            padding: 45px 35px;
+            border-radius: 24px;
+            max-width: 480px;
+            width: 85%;
+            max-height: 82vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            border: 6px double #e6ccb2;
+            text-align: center; 
+            touch-action: pan-y !important;
+            -webkit-overflow-scrolling: touch;
+            animation: modalPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
+        }
+
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: scale(0.85) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 2.2rem;
+            color: #a0a4b8;
+            cursor: pointer;
+            z-index: 101;
+            transition: color 0.2s;
+        }
+        #close-modal:hover { color: var(--primary); }
+
+        .letter-paper-box {
+            border: 2px dashed rgba(255, 133, 161, 0.3);
+            padding: 25px 20px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        #letter-modal-text {
+            font-family: 'Playpen Sans', 'Pyidaungsu', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.9;
+            color: #31112c;
+            text-align: center; 
+            white-space: pre-line;
+            opacity: 0;
+            animation: textFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes textFadeIn {
+            to { opacity: 1; }
+        }
+
+        .modal-gif {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            display: none; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        @media screen and (max-width: 430px) {
+            #page4 {
+                width: 92% !important;
+                padding: 30px 20px !important;
+                max-height: 92vh;
+                overflow-y: auto;
+            }
+            .page-content { flex-direction: column !important; gap: 25px !important; }
+            .polaroid { width: 230px !important; padding-bottom: 35px; }
+            .polaroid img { height: 250px !important; }
+            .envelope-column { width: 100%; flex-direction: row !important; gap: 12px; }
+            .pixel-envelope-group { padding: 12px !important; flex: 1; max-width: 145px; border-radius: 18px; }
+            .pixel-envelope { width: 55px !important; }
+            .envelope-text { font-size: 0.95rem !important; }
+            #letter-display-content { width: 90%; padding: 30px 18px; }
+            .letter-paper-box { padding: 18px 12px; }
+            #letter-modal-text { font-size: 1.05rem !important; line-height: 1.8 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="yeesar.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="audio-control" onclick="toggleMusic()">
+        <span id="audioIcon" style="font-size: 20px;">🎵</span>
+    </div>
+
+    <div id="particles-js"></div>
+
+    <div class="container">
+        <div id="page1" class="page active">
+            <h1>Hi, chit tone lyy</h1>
+            <p style="font-size: 1.15rem; line-height: 1.9; opacity: 0.95; font-weight: 600;">
+                🎀ဘာလေးလုပ်ထားတာလဲသိဖို့..🎀<br>
+                ချစ်စရာ ယုန်လေးနဲ့အတူ <br> <span style="color: var(--gold); font-weight: 700; text-shadow: 0 0 10px rgba(252,203,144,0.4);">အသဲ ၁၅ ပြည့်အောင်</span> ဖမ်းပေးပါ
+            </p>
+            <button class="btn-glow" onclick="initGame()">Start Journey</button>
+        </div>
+
+        <div id="page2" class="page" style="width:100%; max-width:none; height:100%; background: transparent; border: none; backdrop-filter: none; box-shadow: none; padding:0;">
+            <div id="game-ui">
+                <div class="stat-card">❤️ <span id="score">0</span> / 15</div>
+                <div class="stat-card">LVL: <span id="level">1</span></div>
+            </div>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div id="page3" class="page">
+            <h2 style="font-family: 'Playpen Sans'; font-weight: 700; font-size: 2.2rem; color: var(--gold);">Capturing Moments</h2>
+            <div class="loader-wrapper">
+                <div id="progress" class="loader-fill"></div>
+            </div>
+            <p id="loading-text" style="font-style: italic; opacity: 0.85; font-weight: 600;">Gathering all the love for you...</p>
+        </div>
+
+        <div id="page4" class="page" style="width: 95%; max-width: 720px; padding: 40px; border-radius: 35px;">
+            <div class="page4-container">
+                <div class="page-header">
+                    <h2>Eternal Love</h2>
+                </div>
+
+                <div class="page-content">
+                    <div class="polaroid">
+                        <img src="Rluukg.jpg" alt="Memory">
+                        <span class="decoration-emoji" style="top: -20px; right: -20px; font-size: 45px; animation-delay: 0s;">🎀</span>
+                        <span class="decoration-emoji" style="bottom: 30px; left: -15px; font-size: 35px; animation-delay: 0.5s;">🌸</span>
+                        <div class="polaroid-caption">my valentine &lt;3</div>
+                    </div>
+
+                    <div class="envelope-column">
+                        <div class="pixel-envelope-group" onclick="selectLetter(1)">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="Letter" class="pixel-envelope">
+                            <div class="envelope-text">Letter For you</div>
+                        </div>
+                        <div class="pixel-envelope-group" onclick="selectLetter(2)">
+                            <img src="Icon.png" alt="One More" class="pixel-envelope">
+                            <div class="envelope-text">One more...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-footer">
+                    <button class="btn-return" onclick="resetToStart()">← Return to Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="letter-modal" onclick="closeLetter()">
+        <div id="letter-display-content" onclick="event.stopPropagation()">
+            <span id="close-modal" onclick="closeLetter()">×</span>
+            <img id="letter-gif" src="Kiss.gif" alt="Love GIF" class="modal-gif">
+            <div class="letter-paper-box">
+                <p id="letter-modal-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        let audioCtx = null;
+        function playCatchSound() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); 
+                
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } catch(e) { console.log(e); }
+        }
+
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 24 },
+                "color": { "value": "#ff85a1" },
+                "shape": { "type": "heart" },
+                "opacity": { "value": 0.2 },
+                "size": { "value": 4 },
+                "move": { "enable": true, "speed": 1.0, "direction": "top", "random": true }
+            }
+        });
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const music = document.getElementById('bgMusic');
+        let isMuted = false;
+        
+        let score = 0, level = 1, gameActive = false, hearts = [], caughtHearts = [];
+        let basket = { x: 0, targetX: 0, y: 0, width: 90, height: 60, bounce: 0, velocityX: 0, happyTimer: 0 };
+        let runAnimFrame = 0, clouds = [];
+        
+        // Deep Nature Engine Elements
+        let natureElements = { mountains: [], trees: [], bushes: [], grassBlades: [], fallingPetals: [], fireflies: [] };
+        let windTime = 0;
+
+        function toggleMusic() {
+            isMuted = !isMuted;
+            music.muted = isMuted;
+            document.getElementById('audioIcon').innerText = isMuted ? "❌" : "🎵";
+        }
+
+        function createClouds() {
+            clouds = [];
+            for(let i = 0; i < 4; i++) {
+                clouds.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * 100 + 40,
+                    speed: 0.1 + Math.random() * 0.15,
+                    size: 40 + Math.random() * 25,
+                    opacity: 0.08 + Math.random() * 0.1
+                });
+            }
+        }
+
+        // --- ULTRA NATURE PARALLAX ENGINE INITIALIZATION ---
+        function initNatureEnvironment(pathY) {
+            natureElements.mountains = [];
+            natureElements.trees = [];
+            natureElements.bushes = [];
+            natureElements.grassBlades = [];
+            natureElements.fallingPetals = [];
+            natureElements.fireflies = [];
+
+            // 1. Far Mountains (နောက်ခံ အလွှာစုံ တောင်တန်းကြီးများ)
+            let mountainCount = 3;
+            for (let i = 0; i < mountainCount; i++) {
+                natureElements.mountains.push({
+                    x: (i * window.innerWidth / 2) - 50,
+                    y: pathY - 10,
+                    w: window.innerWidth * 0.9,
+                    h: 110 + Math.random() * 60,
+                    color: i % 2 === 0 ? '#261b35' : '#1e142a'
+                });
+            }
+
+            // 2. Midground Trees with varied sizes (သစ်ပင်တန်း)
+            for (let i = -40; i < window.innerWidth + 100; i += 100 + Math.random() * 60) {
+                natureElements.trees.push({
+                    x: i,
+                    y: pathY + 5,
+                    height: 85 + Math.random() * 40,
+                    radius: 36 + Math.random() * 12,
+                    swayOffset: Math.random() * Math.PI,
+                    color: Math.random() > 0.5 ? '#243b29' : '#1b2e20'
+                });
+            }
+
+            // 3. Foreground Fluffy Bushes  
+            for (let i = -20; i < window.innerWidth + 60; i += 45 + Math.random() * 50) {
+                natureElements.bushes.push({
+                    x: i,
+                    y: pathY + 2,
+                    radX: 20 + Math.random() * 15,
+                    radY: 14 + Math.random() * 8,
+                    swayOffset: Math.random() * Math.PI,
+                    flowerColor: Math.random() > 0.5 ? '#ff85a1' : (Math.random() > 0.6 ? '#fccb90' : null)
+                });
+            }
+
+            // 4. Detailed Grass Field and Wild Flowers  
+            for (let i = 4; i < window.innerWidth; i += 12) {
+                natureElements.grassBlades.push({
+                    x: i + (Math.random() * 6 - 3),
+                    y: pathY + 4 + (Math.random() * 18),
+                    h: 10 + Math.random() * 14,
+                    phase: Math.random() * Math.PI * 2,
+                    type: Math.random() > 0.85 ? 'flower' : 'grass',
+                    fColor: Math.random() > 0.4 ? '#ff85a1' : '#fff'
+                });
+            }
+
+            // 5. Environmental Flying Petals  
+            for (let i = 0; i < 18; i++) {
+                natureElements.fallingPetals.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    r: 2 + Math.random() * 3,
+                    speedY: 0.5 + Math.random() * 0.7,
+                    speedX: 0.3 + Math.random() * 0.5,
+                    swayTime: Math.random() * 100,
+                    color: Math.random() > 0.35 ? 'rgba(255, 133, 161, 0.45)' : 'rgba(98, 142, 98, 0.35)'
+                });
+            }
+
+            // 6. Magical Fireflies (ပိုးစုန်းကြူးကလေးများ)
+            for (let i = 0; i < 12; i++) {
+                natureElements.fireflies.push({
+                    x: Math.random() * window.innerWidth,
+                    y: pathY + (Math.random() * 120),
+                    angle: Math.random() * Math.PI * 2,
+                    speed: 0.3 + Math.random() * 0.4,
+                    pulseSpeed: 0.05 + Math.random() * 0.05,
+                    pulseTime: Math.random() * 10,
+                    size: 1.5 + Math.random() * 2
+                });
+            }
+        }
+
+        function drawClouds() {
+            clouds.forEach(c => {
+                ctx.save();
+                ctx.fillStyle = `rgba(255, 255, 255, ${c.opacity})`;
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+                ctx.arc(c.x + c.size * 0.6, c.y - c.size * 0.2, c.size * 0.8, 0, Math.PI * 2);
+                ctx.arc(c.x + c.size * 1.2, c.y, c.size * 0.7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+                c.x += c.speed;
+                if(c.x > window.innerWidth + 100) c.x = -150;
+            });
+        }
+
+        function initGame() {
+            music.play().catch(e => console.log("Audio play failed: ", e));
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+            document.getElementById('page1').classList.remove('active');
+            document.getElementById('page2').classList.add('active');
+            
+            score = 0; level = 1; hearts = []; caughtHearts = [];
+            document.getElementById('score').innerText = score;
+            document.getElementById('level').innerText = level;
+            
+            resize();
+            createClouds();
+            basket.x = window.innerWidth/2;
+            basket.targetX = basket.x;
+            gameActive = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resetToStart() {
+            document.getElementById('page4').classList.remove('active');
+            document.getElementById('page1').classList.add('active');
+            document.body.style.overflowY = "hidden";
+            document.body.style.touchAction = "none";
+        }
+
+        function resize() {
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = window.innerWidth * ratio;
+            canvas.height = window.innerHeight * ratio;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(ratio, ratio);
+            basket.y = window.innerHeight - 175;
+            
+            initNatureEnvironment(basket.y + 75);
+        }
+        window.addEventListener('resize', resize);
+
+        const handleMove = (e) => {
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            basket.targetX = x;
+        };
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchstart', handleMove);
+        window.addEventListener('touchmove', (e) => { 
+            if(gameActive) { e.preventDefault(); handleMove(e); }
+        }, {passive: false});
+
+        // --- ULTRA DYNAMIC NATURE ENVIRONMENT GRAPHICS ENGINE ---
+        function drawPath() {
+            const pathY = basket.y + 75;
+            const pathHeight = window.innerHeight - pathY;
+            windTime += 0.02; // Wind Time Control Loop
+            
+            ctx.save();
+            
+            // 1. Beautiful Golden Sunset/Atmospheric Sky Gradient Background
+            let skyGrd = ctx.createLinearGradient(0, 0, 0, pathY);
+            skyGrd.addColorStop(0, '#0d0c1d');
+            skyGrd.addColorStop(0.4, '#1b1530');
+            skyGrd.addColorStop(0.75, '#431d3d');
+            skyGrd.addColorStop(0.95, '#68263c');
+            skyGrd.addColorStop(1, '#84383b');
+            ctx.fillStyle = skyGrd;
+            ctx.fillRect(0, 0, window.innerWidth, pathY);
+
+            //  (ဆည်းဆာနောက်ခံ တောင်တန်းများ)
+            natureElements.mountains.forEach(m => {
+                ctx.fillStyle = m.color;
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                ctx.quadraticCurveTo(m.x + m.w * 0.25, m.y - m.h, m.x + m.w * 0.5, m.y - m.h * 0.4);
+                ctx.quadraticCurveTo(m.x + m.w * 0.75, m.y - m.h * 1.1, m.x + m.w, m.y);
+                ctx.lineTo(m.x + m.w, pathY);
+                ctx.lineTo(m.x, pathY);
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            //   (လေညင်းကြောင့် ယိမ်းနွဲ့နေမည့် သစ်ပင်တန်းကြီးများ)
+            natureElements.trees.forEach(t => {
+                let treeSway = Math.sin(windTime + t.swayOffset) * 3;
+                
+                // Trunk Structure
+                ctx.fillStyle = '#16121e';
+                ctx.fillRect(t.x - 4, t.y - t.height, 8, t.height);
+                
+                // Rich Foliage Layers
+                ctx.fillStyle = t.color;
+                ctx.beginPath();
+                ctx.arc(t.x + treeSway, t.y - t.height, t.radius, 0, Math.PI * 2);
+                ctx.arc(t.x - t.radius * 0.4 + treeSway, t.y - t.height - t.radius * 0.3, t.radius * 0.8, 0, Math.PI * 2);
+                ctx.arc(t.x + t.radius * 0.4 + treeSway, t.y - t.height - t.radius * 0.3, t.radius * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 4. Draw Midground Fluffy Bushes & Embedded Flowers (ချုံပုလေးများနှင့် ပန်းငုံများ)
+            natureElements.bushes.forEach(b => {
+                let bushSway = Math.cos(windTime + b.swayOffset) * 2.2;
+                ctx.fillStyle = '#304d30';
+                ctx.beginPath();
+                ctx.ellipse(b.x + bushSway, b.y, b.radX, b.radY + 4, 0, 0, Math.PI * 2);
+                ctx.ellipse(b.x - b.radX * 0.3 + bushSway, b.y - 3, b.radX * 0.7, b.radY, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (b.flowerColor) {
+                    ctx.fillStyle = b.flowerColor;
+                    ctx.beginPath();
+                    ctx.arc(b.x + bushSway - 4, b.y - 2, 2.5, 0, Math.PI * 2);
+                    ctx.arc(b.x + bushSway + 5, b.y + 2, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            //  (မြေပြင်အောက်ခံ အရောင်စပ်မှု)
+            let groundGrd = ctx.createLinearGradient(0, pathY, 0, window.innerHeight);
+            groundGrd.addColorStop(0, '#3f613f');
+            groundGrd.addColorStop(0.2, '#314c31');
+            groundGrd.addColorStop(1, '#1b2c1b');
+            ctx.fillStyle = groundGrd;
+            ctx.fillRect(0, pathY, window.innerWidth, pathHeight);
+
+            //   (လှိုင်းထသလို လှုပ်ရှားနေမည့် တောပန်းနှင့် မြက်ပင်များ)
+            natureElements.grassBlades.forEach(g => {
+                // Wave wind dynamic calculation
+                let waveSway = Math.sin(windTime * 1.5 + g.phase) * 4.5;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                
+                if (g.type === 'grass') {
+                    ctx.strokeStyle = '#527c52';
+                    ctx.beginPath();
+                    ctx.moveTo(g.x, g.y);
+                    ctx.quadraticCurveTo(g.x + waveSway * 0.4, g.y - g.h * 0.5, g.x + waveSway, g.y - g.h);
+                    ctx.stroke();
+                } else {
+                    // Wild Flower Clusters with Swaying Stems
+                    ctx.strokeStyle = '#446644';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(g.x, g.y);
+                    ctx.lineTo(g.x + waveSway * 0.7, g.y - g.h);
+                    ctx.stroke();
+                    
+                    // Petals
+                    ctx.fillStyle = g.fColor;
+                    ctx.beginPath();
+                    ctx.arc(g.x + waveSway * 0.7, g.y - g.h, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Core
+                    ctx.fillStyle = '#fccb90';
+                    ctx.beginPath();
+                    ctx.arc(g.x + waveSway * 0.7, g.y - g.h, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            //   (ပိုးစုန်းကြူးကလေးများ ဆည်းဆာထဲ ဝဲပျံနေခြင်း)
+            natureElements.fireflies.forEach(f => {
+                f.pulseTime += f.pulseSpeed;
+                let opacity = (Math.sin(f.pulseTime) + 1) / 2 * 0.8 + 0.2; // Glowing pulse rhythm
+                
+                // Slow organic random walk float loops
+                f.x += Math.cos(f.angle) * f.speed;
+                f.y += Math.sin(f.angle) * f.speed * 0.5;
+                if (Math.random() < 0.02) f.angle = Math.random() * Math.PI * 2;
+
+                // Screen Boundary Wrap around
+                if (f.x < -10) f.x = window.innerWidth + 10;
+                if (f.x > window.innerWidth + 10) f.x = -10;
+                if (f.y < pathY - 20) f.y = window.innerHeight;
+                if (f.y > window.innerHeight) f.y = pathY - 20;
+
+                ctx.save();
+                let glowGrd = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.size * 4);
+                glowGrd.addColorStop(0, `rgba(212, 255, 120, ${opacity})`);
+                glowGrd.addColorStop(0.4, `rgba(212, 255, 120, ${opacity * 0.3})`);
+                glowGrd.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = glowGrd;
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.size * 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            //  (လေထဲက ဝဲပျံနေသော သစ်ရွက်ကြွေများ)
+            natureElements.fallingPetals.forEach(p => {
+                p.y += p.speedY;
+                p.swayTime += 0.025;
+                p.x += Math.sin(p.swayTime) * p.speedX + 0.4; // Continuous organic drift factor
+                
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.ellipse(p.x, p.y, p.r, p.r * 0.5, Math.sin(p.swayTime) * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (p.y > window.innerHeight + 10 || p.x > window.innerWidth + 10) {
+                    p.y = -10;
+                    p.x = Math.random() * (window.innerWidth - 60);
+                }
+            });
+
+            ctx.restore();
+        }
+
+        function drawCharacterAndBasket(x, y, w, h) {
+            ctx.save();
+            let speed = Math.abs(basket.velocityX);
+            let direction = Math.sign(basket.velocityX) || 1;
+            let runFactor = Math.min(speed / 3.5, 1.2); 
+            let cycle = runAnimFrame;
+            
+            let bodyBob = Math.abs(Math.sin(cycle)) * 10 * runFactor; 
+            let leanAngle = (basket.velocityX * 0.015);
+            
+            // Premium Blur Character Shadows on detailed grass texture
+            ctx.fillStyle = 'rgba(12, 22, 12, 0.45)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + h + 10, 34 + (bodyBob * 0.4), 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.translate(x, y + h + basket.bounce);
+            ctx.rotate(leanAngle);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.strokeStyle = '#FFD1DC';
+            ctx.lineWidth = 2.5;
+            
+            let legL = Math.sin(cycle) * 15 * runFactor;
+            let legR = Math.sin(cycle + Math.PI) * 15 * runFactor;
+            let legLiftL = Math.max(0, Math.cos(cycle)) * 9 * runFactor;
+            let legLiftR = Math.max(0, Math.cos(cycle + Math.PI)) * 9 * runFactor;
+
+            ctx.beginPath(); ctx.ellipse(-11 + legL, -5 - legLiftL, 7, 12, direction * 0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(11 + legR, -5 - legLiftR, 7, 12, direction * 0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            ctx.beginPath(); ctx.arc(20 - (leanAngle * 9), -24 - bodyBob, 9.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-23, -10 - bodyBob); ctx.bezierCurveTo(-31, -10, -31, -52, 0, -52 - bodyBob); ctx.bezierCurveTo(31, -52, 31, -10, 23, -10 - bodyBob); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.strokeStyle = '#FFFFFF';
+            let armOsc = Math.sin(cycle) * 5 * runFactor;
+            ctx.beginPath(); ctx.moveTo(-17, -33 - bodyBob); ctx.lineTo(-38 + armOsc, -23); ctx.stroke();
+
+            ctx.save();
+            ctx.translate(0, -67 - bodyBob);
+            ctx.fillStyle = '#FFFFFF';
+            
+            let earDrift = -basket.velocityX * 0.045 + (Math.sin(cycle) * 0.08 * runFactor);
+            [-1, 1].forEach(side => {
+                ctx.save();
+                ctx.translate(side * 11, -14);
+                ctx.rotate((side * 0.16 + earDrift) * Math.PI);
+                ctx.beginPath(); ctx.ellipse(0, -15, 8, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#FFD1DC';
+                ctx.beginPath(); ctx.ellipse(0, -15, 4, 16, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            });
+
+            ctx.beginPath(); ctx.arc(0, 5, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            
+            if (basket.happyTimer > 0) {
+                ctx.strokeStyle = '#333'; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.arc(-10, 5, 5, Math.PI, 0); ctx.stroke();
+                ctx.beginPath(); ctx.arc(10, 5, 5, Math.PI, 0); ctx.stroke();
+                ctx.fillStyle = 'rgba(255, 133, 161, 0.6)';
+                ctx.beginPath(); ctx.arc(-15, 11, 4.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(15, 11, 4.5, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillStyle = '#333';
+                let blink = Math.sin(Date.now()/450) > 0.88 ? 0.1 : 1;
+                ctx.beginPath(); ctx.ellipse(-10, 3, 3, 4.5 * blink, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(10, 3, 3, 4.5 * blink, 0, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.fillStyle = '#FF85A1'; ctx.beginPath(); ctx.arc(0, 7, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(-42 + armOsc, -25);
+            ctx.rotate(-leanAngle);
+            ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 4.5;
+            ctx.beginPath(); ctx.arc(0, -18, 18, Math.PI, 0); ctx.stroke();
+            let grd = ctx.createLinearGradient(0, -14, 0, 14);
+            grd.addColorStop(0, '#bcaaa4'); grd.addColorStop(1, '#5d4037');
+            ctx.fillStyle = grd;
+            ctx.beginPath(); ctx.roundRect(-24, -14, 48, 32, [4, 4, 14, 14]); ctx.fill();
+            caughtHearts.forEach(h => {
+                ctx.font = `${h.s}px sans-serif`;
+                ctx.fillText('🌸', h.x, h.y);
+            });
+            ctx.restore();
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            if(!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawClouds(); 
+            drawPath(); 
+            
+            let oldX = basket.x;
+            basket.x += (basket.targetX - basket.x) * 0.15; 
+            basket.velocityX = basket.x - oldX;
+            basket.bounce *= 0.80;
+            if(basket.happyTimer > 0) basket.happyTimer--;
+            
+            if (Math.abs(basket.velocityX) > 0.4) {
+                runAnimFrame += Math.min(Math.abs(basket.velocityX) * 0.09, 0.35); 
+            } else {
+                runAnimFrame *= 0.82;
+            }
+            
+            drawCharacterAndBasket(basket.x, basket.y, basket.width, basket.height);
+            
+            if(Math.random() < 0.035) {
+                hearts.push({
+                    x: Math.random() * (window.innerWidth - 60) + 30,
+                    y: -40,
+                    speed: 3.2 + (level * 0.45),
+                    size: 26 + Math.random() * 8,
+                    type: Math.random() > 0.35 ? '🌸' : '❤️'
+                });
+            }
+           
+            for(let i = hearts.length - 1; i >= 0; i--) {
+                let h = hearts[i];
+                h.y += h.speed;
+                let curX = h.x + Math.sin(h.y / 40) * 25;
+                ctx.save();
+                ctx.font = `bold ${h.size}px sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(h.type, curX, h.y);
+                ctx.restore();
+                
+                const basketLeft = basket.x - 66; 
+                const basketRight = basket.x - 12;
+                if(h.y > basket.y - 20 && h.y < basket.y + 40 && curX > basketLeft && curX < basketRight) {
+                    hearts.splice(i, 1);
+                    score++;
+                    basket.bounce = -10; 
+                    basket.happyTimer = 40;
+                    playCatchSound();
+                    
+                    if(caughtHearts.length < 20) {
+                        caughtHearts.push({ x: Math.random()*28-14, y: 8-(caughtHearts.length*2.8), s: 13+Math.random()*5 });
+                    }
+                    document.getElementById('score').innerText = score;
+                    if(score % 5 === 0) level++;
+                    document.getElementById('level').innerText = level;
+                    
+                    if(score >= 15) {
+                        gameActive = false;
+                        setTimeout(startLoading, 400);
+                    }
+                } else if (h.y > window.innerHeight) { hearts.splice(i, 1); }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        function startLoading() {
+            document.getElementById('page2').classList.remove('active');
+            document.getElementById('page3').classList.add('active');
+            let p = 0;
+            const intv = setInterval(() => {
+                p += 2.5;
+                document.getElementById('progress').style.width = p + '%';
+                if(p >= 100) {
+                    clearInterval(intv);
+                    setTimeout(() => {
+                        document.getElementById('page3').classList.remove('active');
+                        document.getElementById('page4').classList.add('active');
+                        document.body.style.overflowY = "auto";
+                        document.body.style.touchAction = "auto";
+                    }, 500);
+                }
+            }, 35);
+        }
+        const letterData = {
+            1: `အရမ်းချစ်ရပါသော အချစ်ဆုံးလေးးး ❤️\n\nကိုဘဝမှာတခါမှ လူတယောက်ကို စွဲစွဲ လန်းလန်း မချစ်ဖူးဘူး ဘယ်သူနဲ့မှလဲ စကားမပြောဖြစ်လာက်တဲ့ထိလဲ တိတ်ဆိတ်ဖူးတယ် ဒါမဲ့ ချစ်တုံးလေးနဲ့ကျမှ တိတ်ဆိတ်မှုဆိုတာ မရှိသလောက်ဖြစ်သွားတယ် တန်ဖိုးဆိုကြီးတာကိုလဲပိုနားလည်လာတယ် 
+ချစ်တုံးလေးကိုရဖိုအတွက်အချိန်အကြာကြီး ပေးခဲ့ရတော့ ပိုပြီးတန်ဖိုးလဲထားတယ် ပြောပြလိုမရလောက်အောင်ကိုလဲချစ်တယ် ပြီးတော့ ဘာပဲဖြစ်ဖြစ် အနားမှအမြဲရှိနေပေးတာကိုအရမ်းကျေနပ်မိတယ်\n\nတခါတလေကျရင်လဲ ဆုံးရှုးသွားရမှာကိုလဲအရမ်းကြောက်မိတယ် အနားမှာအမြဲရှိပေးချင်တယ် ဘယ်ပဲသွားသွား ဘာပဲလုပ်လုပ် မျက်လုံးထဲမှာကလေးလေးလိုပဲ 
+ ပြီးတော့ ကိုကိုတကယ်ချစ်ရင်ကျန်းမာရေလေးတော့သေချာဂရုစိုက်ပါနော် တခုခု ဖြစ်သွားမှာကိုအရမ်းကြောက်တယ် စိတ်လဲပူတယ်\n\nပြီးတော့ချစ်တုံးနဲ့တွေ့တော့မှ ကိုဘဝကြီးကအရင်ကပိုပြီးတော့အဓိပ္ပာယ်တွေရှိလာတယ်သိလား ကိုပြောင်းလဲသွားရတဲ့အကြောင်းအရင်းထဲမှာလဲ ချစ်တုံးလေးကြောင့်အများကြီးပါတယ်\n\n ဆိုတော့ Happy 1 monthsaryပါနော်ချစ်ဆုံးလေး  monthsaryကနေanniversary ထိသတက်လုံး ထာဝရထပ်တရက်ပိုပြီးအတူရှိသွားချင်တယ်\nဘာပဲဖြစ်လာလာ ဘာပဲဖြစ်ဖြစ် ကိုအမြဲတမ်းရှိတယ်နော်ချစ်တုံးလေး🤍`,
+            2: `This is just for you🌸\n\nချစ်တုံးလေးကြိုက်မယ်လိုမျှော်လင့်ပါတယ်နော် ပြီးတော့ ချစ်ဆုံးလေးကကိုဘဝရဲ့အရေးအပါဆုံးရတနာလေးမလို အမြဲတယုတရနဲ့ တန်းဖိုးထားပြီးစောင့်ရှောက်ပေးပါမယ်နော်
+\n\nအရမ်းချစ်တယ် ချစ်ဆုံးလေး💖`
+        };
+
+        function selectLetter(id) {
+            const modal = document.getElementById('letter-modal');
+            const textElement = document.getElementById('letter-modal-text');
+            const gifElement = document.getElementById('letter-gif');
+            
+            if (letterData[id]) {
+                if(id === 2) {
+                    gifElement.style.width = '100%';
+                    gifElement.style.display = 'inline-block';
+                } else {
+                    gifElement.style.display = 'none';
+                }
+                
+                modal.style.display = 'flex';
+                document.getElementById('letter-display-content').scrollTop = 0;
+                
+                textElement.innerText = letterData[id];
+
+                confetti({ 
+                    particleCount: 160, spread: 80, origin: { y: 0.75 }, 
+                    colors: ['#fccb90', '#ff85a1', '#ffffff', '#d597ce'] 
+                });
+            }
+        }
+        function closeLetter() {
+            document.getElementById('letter-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
